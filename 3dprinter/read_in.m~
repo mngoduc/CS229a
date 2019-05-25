@@ -1,6 +1,8 @@
 close all; clear all; clc;
 
 load('data.mat');
+% eh idk 
+data = data.data; 
 data = table2array(data);
 % random number generator to separate into train - cv - test 
 idx = randperm(50,50);

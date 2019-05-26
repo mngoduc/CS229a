@@ -65,7 +65,7 @@ train_data.material = train(:,8);
 train_data.fan_speed = train(:,9); 
 
 train_data.inputs = train(:,1:9);
-
+train_data.normalized_inputs = featureNormalize(train_data.inputs);
 train_data.tension_strength = train(:,11); 
 
 save('train_data.mat', 'train_data')
@@ -82,6 +82,7 @@ cv_data.material = cv(:,8);
 cv_data.fan_speed = cv(:,9); 
 
 cv_data.inputs = cv(:,1:9);
+cv_data.normalized_inputs = featureNormalize(cv_data.inputs);
 
 cv_data.tension_strength = cv(:,11); 
 

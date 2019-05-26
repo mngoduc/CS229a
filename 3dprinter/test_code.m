@@ -2,10 +2,10 @@ close all; clear all; clc
 
 load('train_data.mat'); 
 theta_init = zeros(9, 1);
-num_iters = 200; 
-alpha = 7.5e-6; 
+num_iters = 2000; 
+alpha = 7.5e-3; 
 
-[train.theta, train.J_history] = gradientDescentMulti(train_data.inputs, ...
+[train.theta, train.J_history] = gradientDescentMulti(train_data.normalized_inputs, ...
                                           train_data.tension_strength,...
                                           theta_init, alpha, num_iters);
 
@@ -15,8 +15,9 @@ load('cv_data.mat');
 
 cv.J = zeros(num_iters, 1);
 for i = 1:length(train.theta)
-    cv.J(i) = computeCostMulti(cv_data.inputs, cv_data.tension_strength, ...
-                        train.theta(:,i));
+    cv.J(i) = computeCostMulti(cv_data.normalized_inputs, ...
+                               cv_data.tension_strength, ...
+                               train.theta(:,i));
 end 
 
 plot(train.J_history)

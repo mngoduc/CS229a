@@ -2,7 +2,7 @@ close all; clear all; clc
 
 load('train_data.mat'); 
 theta_init = zeros(9, 1);
-num_iters = 2000; 
+num_iters = 700; 
 alpha = 7.5e-3; 
 lambda = 10; 
 

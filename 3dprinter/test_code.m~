@@ -46,7 +46,7 @@ norm.y_pred = cv_data.normalized_inputs * norm.Theta;
 norm.cv_error = cv_data.normalized_young - norm.y_pred; 
 norm.mse = mean(sqrt(norm.cv_error.^2));
 figure; 
-histogram(norm.cv_error, 10)
+histogram(norm.cv_error)
 disp(norm.mse)
 
 figure; 

@@ -57,18 +57,31 @@ elongation = 12;
 train_data.layer_height = train(:,1); 
 train_data.wall_thickness = train(:,2); 
 train_data.infill_density = train(:,3); 
-train_data.infill_pattern = train(:,4); 
+train_data.infill_pattern = train(:,4);
+train_data.infill_pattern(train_data.infill_pattern == 1) = 4; 
+train_data.infill_pattern(train_data.infill_pattern == 2) = 6;
+
 train_data.nozzle_temperature = train(:,5); 
 train_data.bed_temperature = train(:,6); 
 train_data.print_speed = train(:,7);
 train_data.material = train(:,8); 
-
-train_data.material(train_data.material == 1) = 1.4e3; 
-train_data.material(train_data.material == 2) = 0.085e3; 
+% abs UTS
+train_data.material(train_data.material == 1) = 27;
+% pla UTS
+train_data.material(train_data.material == 2) = 37; 
 
 train_data.fan_speed = train(:,9); 
 
-train_data.inputs = train(:,1:9);
+train_data.inputs = [train_data.layer_height,...
+                     train_data.wall_thickness,...
+                     train_data.infill_density,...
+                     train_data.infill_pattern,...
+                     train_data.nozzle_temperature,...
+                     train_data.bed_temperature ,...
+                     train_data.print_speed,...
+                     train_data.material,...
+                     train_data.fan_speed];
+                 
 train_data.normalized_inputs = featureNormalize(train_data.inputs);
 train_data.tension_strength = train(:,11); 
 train_data.normalized_young = featureNormalize(train_data.tension_strength);
@@ -80,17 +93,28 @@ cv_data.layer_height = cv(:,1);
 cv_data.wall_thickness = cv(:,2); 
 cv_data.infill_density = cv(:,3); 
 cv_data.infill_pattern = cv(:,4); 
+cv_data.infill_pattern(cv_data.infill_pattern == 1) = 4; 
+cv_data.infill_pattern(cv_data.infill_pattern == 2) = 6;
 cv_data.nozzle_temperature = cv(:,5); 
 cv_data.bed_temperature = cv(:,6); 
 cv_data.print_speed = cv(:,7);
 cv_data.material = cv(:,8); 
 
-cv_data.material(train_data.material == 1) = 1.4e3; 
-cv_data.material(train_data.material == 2) = 0.085e3; 
+cv_data.material(train_data.material == 1) = 27; 
+cv_data.material(train_data.material == 2) = 37; 
 
 cv_data.fan_speed = cv(:,9); 
 
-cv_data.inputs = cv(:,1:9);
+cv_data.inputs = [cv_data.layer_height,...
+                     cv_data.wall_thickness,...
+                     cv_data.infill_density,...
+                     cv_data.infill_pattern,...
+                     cv_data.nozzle_temperature,...
+                     cv_data.bed_temperature ,...
+                     cv_data.print_speed,...
+                     cv_data.material,...
+                     cv_data.fan_speed];
+
 cv_data.normalized_inputs = featureNormalize(cv_data.inputs);
 
 cv_data.tension_strength = cv(:,11); 

@@ -15,7 +15,7 @@ lambda = 10;
                                      theta_init, alpha, ...
                                      lambda, num_iters);
 
-
+train.theta(:, end)
 % learned the things, now cross-validate
 
 load('cv_data.mat');
@@ -46,7 +46,7 @@ norm.y_pred = cv_data.normalized_inputs * norm.Theta;
 norm.cv_error = cv_data.normalized_young - norm.y_pred; 
 norm.mse = mean(sqrt(norm.cv_error.^2));
 figure; 
-histogram(norm.cv_error)
+histogram(norm.cv_error, 10)
 disp(norm.mse)
 
 figure; 
@@ -54,3 +54,13 @@ plot(norm.y_pred, 'ro')
 hold on; 
 plot(cv_data.normalized_young, 'b*')
 legend('predicted', 'actual')
+
+%% what if we removed some features, name features #6 and #9
+
+train_reduced.norm_inputs = [train_data.normalized_inputs(:,1:5),...
+                            train_data.normalized_inputs(:]
+[train_reduced.theta, train_reduced.J_history] = ...
+                        regGradDescent(train_data.normalized_inputs, ...
+                        train_data.normalized_young,...
+                                     theta_init, alpha, ...
+                                     lambda, num_iters);

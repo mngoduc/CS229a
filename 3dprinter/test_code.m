@@ -10,8 +10,8 @@ lambda = 10;
 %                                           train_data.normalized_young,...
 %                                           theta_init, alpha, num_iters);
 
-[train.theta, train.J_history] = regGradDescent(train_data.normalized_inputs, ...
-                                     train_data.normalized_young,...
+[train.theta, train.J_history] = regGradDescent(train_data.inputs, ...
+                                     train_data.UTS,...
                                      theta_init, alpha, ...
                                      lambda, num_iters);
 
@@ -22,8 +22,8 @@ load('cv_data.mat');
 
 cv.J = zeros(num_iters, 1);
 for i = 1:length(train.theta)
-    cv.J(i) = computeCostMulti(cv_data.normalized_inputs, ...
-                               cv_data.normalized_young, ...
+    cv.J(i) = computeCostMulti(cv_data.inputs, ...
+                               cv_data.UTS, ...
                                train.theta(:,i));
 end 
 
@@ -38,15 +38,15 @@ plotfixer;
 savefig("Cost_all_features.fig")
 %%
 norm.lambda = 25;
-norm.X = train_data.normalized_inputs; 
-norm.y = train_data.normalized_young; 
+norm.X = train_data.inputs; 
+norm.y = train_data.UTS; 
 
 XTX = norm.X' * norm.X;
 Inxn = eye(size(XTX)); 
 norm.Theta = pinv(XTX + norm.lambda * Inxn) * norm.X' * norm.y;
 
-norm.y_pred = cv_data.normalized_inputs * norm.Theta;
-norm.cv_error = cv_data.normalized_young - norm.y_pred; 
+norm.y_pred = cv_data.inputs * norm.Theta;
+norm.cv_error = cv_data.UTS - norm.y_pred; 
 norm.mse = mean(sqrt(norm.cv_error.^2));
 figure; 
 histogram(norm.cv_error, 10)
@@ -55,30 +55,30 @@ disp(norm.mse)
 figure; 
 plot(norm.y_pred, 'ro')
 hold on; 
-plot(cv_data.normalized_young, 'b*')
+plot(cv_data.UTS, 'b*')
 legend('predicted', 'actual')
 
 %% what if we removed some features, name features #6 and #9
 
-train_reduced.norm_inputs = [train_data.normalized_inputs(:,1:5),...
-                            train_data.normalized_inputs(:,7:8)];
+train_reduced.inputs = [train_data.inputs(:,1:5),...
+                            train_data.inputs(:,7:8)];
 theta_init_new = zeros(1,7);
 
 [train_reduced.theta, train_reduced.J_history] = ...
-                        regGradDescent(train_reduced.norm_inputs, ...
-                                       train_data.normalized_young,...
+                        regGradDescent(train_reduced.inputs, ...
+                                       train_data.UTS,...
                                        theta_init_new, alpha, ...
                                        lambda, num_iters);
                                    
 train_reduced.theta(:, end)
 
 % learned the things, now cross-validate
-cv_reduced_data.norm_inputs = [cv_data.normalized_inputs(:,1:5),...
-                               cv_data.normalized_inputs(:,7:8)];
+cv_reduced_data.inputs = [cv_data.inputs(:,1:5),...
+                               cv_data.inputs(:,7:8)];
 cv_reduced.J = zeros(num_iters, 1);
 for i = 1:length(train.theta)
-    cv_reduced.J(i) = computeCostMulti(cv_reduced_data.norm_inputs, ...
-                               cv_data.normalized_young, ...
+    cv_reduced.J(i) = computeCostMulti(cv_reduced_data.inputs, ...
+                               cv_data.UTS, ...
                                train_reduced.theta(:,i));
 end 
 

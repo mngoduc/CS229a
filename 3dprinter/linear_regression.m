@@ -4,7 +4,7 @@ load('train_data.mat');
 theta_init = zeros(9, 1);
 num_iters = 700; 
 alpha = 7.5e-3; 
-lambda = 5; 
+lambda = 6; 
 
 % [train.theta, train.J_history] = gradientDescentMulti(train_data.normalized_inputs, ...
 %                                           train_data.normalized_young,...
@@ -14,6 +14,7 @@ lambda = 5;
                                      train_data.UTS,...
                                      theta_init, alpha, ...
                                      lambda, num_iters);
+train.actual_J = train.J_history * train_data.sig(11) + train_data.mu(11); 
 
 train.theta(:, end)
 % learned the things, now cross-validate
@@ -27,7 +28,7 @@ for i = 1:length(train.theta)
                                train.theta(:,i));
 end 
 
-cv.actua
+cv.actual_J = cv.J * cv_data.sig(11) + cv_data.mu(11); 
 
 plot(train.J_history)
 hold on; 
@@ -38,6 +39,18 @@ xlabel('Iterations')
 ylabel('Cost')
 plotfixer;
 savefig("Cost_all_features.fig")
+
+
+figure; 
+plot(train.actual_J)
+hold on; 
+plot(cv.actual_J)
+legend("training error", "cross-validation")
+title("actual error")
+xlabel('Iterations')
+ylabel('Cost')
+plotfixer;
+
 %%
 norm.lambda = 25;
 norm.X = train_data.inputs; 
@@ -60,7 +73,7 @@ hold on;
 plot(cv_data.UTS, 'b*')
 legend('predicted', 'actual')
 
-%% what if we removed some features, name features #6 and #9
+%% what if we removed some features, namely features #6 and #9
 
 train_reduced.inputs = [train_data.inputs(:,1:5),...
                             train_data.inputs(:,7:8)];

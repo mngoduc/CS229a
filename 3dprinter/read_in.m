@@ -1,8 +1,25 @@
 close all; clear all; clc;
 
 load('data.mat');
-data = table2array(data);
+all_data = table2array(data);
+clear data
+
+temp_infill = all_data(:,4);
+temp_infill(temp_infill == 1) = 4; 
+temp_infill(temp_infill == 2) = 6;
+all_data(:,4) = temp_infill;
+
+temp_material = all_data(:,8); 
+% abs UTS
+temp_material(temp_material == 1) = 27;
+% pla UTS
+temp_material(temp_material == 2) = 37; 
+all_data(:,8) = temp_material;
 % random number generator to separate into train - cv - test 
+
+[normalized_data, mu, sigma] = featureNormalize(all_data);
+all_data = normalized_data;
+
 idx = randperm(50,50);
 
 train_idx = idx(1:30); 
@@ -15,58 +32,48 @@ test = zeros(10, 12);
 
 % 1  = grid, 2 = honeycomb
 % 1 = abs, 2 = pla
+%% Data has been normalized, now separate into train-validate-stress
 
 for i = 1:length(train_idx)
     idx = train_idx(i);
-    train(i,:) = data(idx,:);
+    train(i,:) = all_data(idx,:);
 end 
 
 save('train.mat','train')
 
 for i = 1:length(cv_idx)
     idx = cv_idx(i);
-    cv(i,:) = data(idx,:);
+    cv(i,:) = all_data(idx,:);
 end
 
 save('cv.mat','cv')
 
 for i = 1:length(test_idx)
     idx = test_idx(i);
-    test(i,:) = data(idx,:);
+    test(i,:) = all_data(idx,:);
 end 
+
 save('test.mat','test')
 
-% column labels 
-% inputs
-layer_height = 1; 
-wall_thickness = 2; 
-infill_density = 3; 
-infill_pattern = 4; 
-nozzle_temperature = 5; 
-bed_temperature = 6; 
-print_speed = 7;
-material = 8; 
-fan_speed = 9; 
-
-% outputs
-roughness = 10; 
-tension_strength = 11; 
-elongation = 12;
-
+%% Separate the things into columns for later 
 % training data columns separated 
 train_data.layer_height = train(:,1); 
 train_data.wall_thickness = train(:,2); 
 train_data.infill_density = train(:,3); 
-train_data.infill_pattern = train(:,4); 
+train_data.infill_pattern = train(:,4);
+
 train_data.nozzle_temperature = train(:,5); 
 train_data.bed_temperature = train(:,6); 
 train_data.print_speed = train(:,7);
 train_data.material = train(:,8); 
+
 train_data.fan_speed = train(:,9); 
 
 train_data.inputs = train(:,1:9);
+train_data.UTS = train(:,11); 
 
-train_data.tension_strength = train(:,11); 
+train_data.mu = mu; 
+train_data.sig = sigma; 
 
 save('train_data.mat', 'train_data')
 
@@ -82,7 +89,11 @@ cv_data.material = cv(:,8);
 cv_data.fan_speed = cv(:,9); 
 
 cv_data.inputs = cv(:,1:9);
+cv_data.UTS = cv(:,11); 
 
-cv_data.tension_strength = cv(:,11); 
-
+cv_data.mu = mu; 
+cv_data.sig = sigma;
 save('cv_data.mat', 'cv_data')
+
+test_data.mu = mu; 
+test_data.sig = sigma; 

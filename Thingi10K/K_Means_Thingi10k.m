@@ -1,6 +1,9 @@
+close all; clear all; clc;
 % Features used:
 % ave_area, ave_aspect_ratio, ave_dihedral_angle,
 % num_faces, num_vertices, num_connected_components
+
+load('import_data.mat')
 
 % Normalize
 ave_area_norm = (ave_area - mean(ave_area)) / std(ave_area);

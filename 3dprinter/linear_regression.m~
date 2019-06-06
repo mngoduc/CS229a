@@ -1,12 +1,15 @@
 close all; clear all; clc
 
 load('train_data.mat'); 
-theta_init = zeros(9, 1);
+theta_init = zeros(18, 1);
 num_iters = 700; 
 alpha = 7.5e-3; 
-lambda = 15; 
+lambda = 1; 
 
-[train.theta, train.J_history] = regGradDescent(train_data.inputs, ...
+train_data.inputs_2nd_order = train_data.inputs.^2; 
+train_data.combined_orders = [train_data.inputs, train_data.inputs_2nd_order];
+
+[train.theta, train.J_history] = regGradDescent(train_data.combined_orders,... %train_data.inputs, ...
                                      train_data.UTS,...
                                      theta_init, alpha, ...
                                      lambda, num_iters);
@@ -18,9 +21,12 @@ train.theta(:, end)
 
 load('cv_data.mat');
 
+cv_data.inputs_2nd_order = cv_data.inputs.^2; 
+cv_data.combined_orders = [cv_data.inputs, cv_data.inputs_2nd_order];
+
 cv.J = zeros(num_iters, 1);
 for i = 1:length(train.theta)
-    cv.J(i) = computeCostMulti(cv_data.inputs, ...
+    cv.J(i) = computeCostMulti(cv_data.combined_orders,... % cv_data.inputs, ...
                                cv_data.UTS, ...
                                train.theta(:,i));
 end 
@@ -74,6 +80,10 @@ legend('predicted', 'actual')
 
 train_reduced.inputs = [train_data.inputs(:,1:5),...
                             train_data.inputs(:,7:8)];
+train_reduced.inputs_squared =  train_reduced.inputs.^2; 
+
+train_reduced.inputs_combined 
+
 theta_init_new = zeros(1,7);
 
 [train_reduced.theta, train_reduced.J_history] = ...

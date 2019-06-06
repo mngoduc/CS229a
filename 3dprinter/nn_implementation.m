@@ -3,12 +3,18 @@ close all; clear all; clc;
 % neural net implementation 
 
 load('train_data.mat');
-X = train_data.inputs; 
-size(X)
-y = train_data.UTS;
-m = size(X, 1);
+train.X = train_data.inputs; 
+size(train.X)
+train.y = train_data.UTS;
+train.m = size(train.X, 1);
 
-net = newgrnn(X, y);
+train.net = newgrnn(train.X, train.y);
+
+load('cv_data.mat');
+cv.X = cv_data.inputs;
+cv.y_pred = sim(train.net,cv.X); 
+cv.y_actual = cv_data.UTS; 
+
 
 % 
 %                           % Setup the parameters you will use for this exercise

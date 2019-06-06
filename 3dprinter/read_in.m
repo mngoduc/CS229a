@@ -17,7 +17,7 @@ temp_material(temp_material == 2) = 37;
 all_data(:,8) = temp_material;
 % random number generator to separate into train - cv - test 
 
-normalized_data = featureNormalize(all_data);
+[normalized_data, mu, sigma] = featureNormalize(all_data);
 all_data = normalized_data;
 
 idx = randperm(50,50);
@@ -38,18 +38,21 @@ for i = 1:length(train_idx)
     idx = train_idx(i);
     train(i,:) = all_data(idx,:);
 end 
+
 save('train.mat','train')
 
 for i = 1:length(cv_idx)
     idx = cv_idx(i);
     cv(i,:) = all_data(idx,:);
 end
+
 save('cv.mat','cv')
 
 for i = 1:length(test_idx)
     idx = test_idx(i);
     test(i,:) = all_data(idx,:);
 end 
+
 save('test.mat','test')
 
 %% Separate the things into columns for later 
@@ -68,6 +71,10 @@ train_data.fan_speed = train(:,9);
 
 train_data.inputs = train(:,1:9);
 train_data.UTS = train(:,11); 
+
+train_data.mu = mu; 
+train_data.sig = sigma; 
+
 save('train_data.mat', 'train_data')
 
 % cross-validation data columns separated 
@@ -84,4 +91,9 @@ cv_data.fan_speed = cv(:,9);
 cv_data.inputs = cv(:,1:9);
 cv_data.UTS = cv(:,11); 
 
+cv_data.mu = mu; 
+cv_data.sig = sigma;
 save('cv_data.mat', 'cv_data')
+
+test_data.mu = mu; 
+test_data.sig = sigma; 

@@ -22,5 +22,5 @@ end
 plot(train.J_history)
 hold on; 
 plot(cv.J)
-legend("training error", "cross-validation")
+legend('training error', 'cross-validation')
 plotfixer;

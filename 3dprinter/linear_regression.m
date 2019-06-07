@@ -26,7 +26,16 @@ for i = 1:length(train.theta)
 end 
 
 cv.actual_J = cv.J * cv_data.sig(11) + cv_data.mu(11); 
+cv.y_pred = cv_data.inputs * train.theta(:, end);
+%cv.pred_err = cv.y_pred - cv_data.UTS
+figure; 
+plot(cv.y_pred,'o');
+hold on; 
+plot(cv_data.UTS,'*'); 
+legend('predicted', 'actual')
+title('Predicted and actual crossval')
 
+figure;
 plot(train.J_history)
 hold on; 
 plot(cv.J)

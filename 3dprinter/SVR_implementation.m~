@@ -53,28 +53,70 @@ fprintf('training_svr_loss : %d \n',train.training_svr_loss);
 plotfixer;
 
 %% reduced features 
-train.reduced.inputs = reduced_features(train_data.inputs, [6,9]);
-train.svr_reduced_Mdl = fitrsvm(train.X, train.y);% , 'KernelFunction','gaussian');
 
-train.ypred = resubPredict(train.svr_Mdl);
-train.err = train.ypred - train.y; 
+excluded_features = [6,7,9];
 
-cv.ypred = predict(train.svr_Mdl, cv.X);
-cv.err = cv.ypred - cv.y;
+train.reduced.inputs = reduced_features(train_data.inputs, excluded_features);
+cv.reduced.X = reduced_features(cv_data.inputs,excluded_features)
+train.reduced.svr_Mdl = fitrsvm(train.reduced.inputs, train.y);% , 'KernelFunction','gaussian');
+
+train.reduced.ypred = resubPredict(train.reduced.svr_Mdl);
+train.reduced.err = train.reduced.ypred - train.y; 
+
+cv.reduced.ypred = predict(train.reduced.svr_Mdl, cv.reduced.X);
+cv.reduced.err = cv.reduced.ypred - cv.y;
 
 figure;
-plot(cv.ypred, 'o');
-hold on; 
-plot(cv.y, '*');
-legend('predicted' , 'actual')
-title('predict and actual normalized UTS')
-cv.J_total = 1/(2*cv.m) * (cv.err)' * cv.err; 
-fprintf('cv_svr_total_loss : %d \n', cv.J_total);
+% plot(cv.reduced.ypred, 'o');
+% hold on; 
+% plot(cv.y, '*');
+% legend('predicted' , 'actual')
+plot(cv.reduced.err)
+title('removed features6-7-9: predict and actual normalized UTS')
 
-train.J_total = 1/(2*train.m) * (train.err)' * train.err; 
-fprintf('train_svr_total_loss : %d \n', train.J_total);
+cv.reduced.J_total = 1/(2*cv.m) * (cv.reduced.err)' * cv.reduced.err; 
+fprintf('cv_svr_total_loss : %d \n', cv.reduced.J_total);
 
-train.training_svr_loss = resubLoss(train.svr_Mdl);
-fprintf('training_svr_loss : %d \n',train.training_svr_loss);
+train.reduced.J_total = 1/(2*train.m) * (train.reduced.err)' * train.reduced.err; 
+fprintf('reduced_train_svr_total_loss : %d \n', train.reduced.J_total);
+
+train.reduced.training_svr_loss = resubLoss(train.reduced.svr_Mdl);
+fprintf('reduced_training_svr_loss : %d \n',train.reduced.training_svr_loss);
 
 plotfixer;
+
+%% reduced features 
+
+excluded_features = [4,6,7,9];
+
+train.reduced4679.inputs = reduced_features(train_data.inputs, excluded_features);
+cv.reduced4679.X = reduced_features(cv_data.inputs,excluded_features)
+train.reduced4679.svr_Mdl = fitrsvm(train.reduced4679.inputs, train.y);% , 'KernelFunction','gaussian');
+
+train.reduced4679.ypred = resubPredict(train.reduced4679.svr_Mdl);
+train.reduced4679.err = train.reduced4679.ypred - train.y; 
+
+cv.reduced4679.ypred = predict(train.reduced4679.svr_Mdl, cv.reduced4679.X);
+cv.reduced4679.err = cv.reduced.ypred - cv.y;
+
+figure;
+plot(cv.reduced.ypred, 'o');
+hold on; 
+% plot(cv.y, '*');
+legend('predicted' , 'actual')
+title('removed features-4-6-7-9: predict and actual normalized UTS')
+
+cv.reduced.J_total = 1/(2*cv.m) * (cv.reduced.err)' * cv.reduced.err; 
+fprintf('cv_svr_total_loss : %d \n', cv.reduced.J_total);
+
+train.reduced.J_total = 1/(2*train.m) * (train.reduced.err)' * train.reduced.err; 
+fprintf('reduced_train_svr_total_loss : %d \n', train.reduced.J_total);
+
+train.reduced.training_svr_loss = resubLoss(train.reduced.svr_Mdl);
+fprintf('reduced_training_svr_loss : %d \n',train.reduced.training_svr_loss);
+
+plotfixer;
+
+
+
+%% comparing removing features

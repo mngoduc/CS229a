@@ -20,6 +20,8 @@ all_data(:,8) = temp_material;
 [normalized_data, mu, sigma] = featureNormalize(all_data);
 all_data = normalized_data;
 
+save('all_data.mat','all_data');
+
 idx = randperm(50,50);
 
 train_idx = idx(1:30); 
@@ -33,6 +35,7 @@ test = zeros(10, 12);
 % 1  = grid, 2 = honeycomb
 % 1 = abs, 2 = pla
 %% Data has been normalized, now separate into train-validate-stress
+
 
 for i = 1:length(train_idx)
     idx = train_idx(i);

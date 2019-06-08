@@ -26,7 +26,7 @@ cv.Encoded_X = train.Encoder_W * cv.X' + train.Encoder_b;
 %%
 
 theta_init = zeros(layer_size, 1);
-num_iters = 100; 
+num_iters = 500; 
 alpha = 7.5e-3; 
 lambda = 15; 
 

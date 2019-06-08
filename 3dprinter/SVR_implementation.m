@@ -26,14 +26,15 @@ train.svr_Mdl = fitrsvm(train.X, train.y);% , 'KernelFunction','gaussian');
 
 train.ypred = resubPredict(train.svr_Mdl);
 train.err = train.ypred - train.y; 
+train.abs_err = abs(train.y) - abs(train.ypred); 
 
 cv.ypred = predict(train.svr_Mdl, cv.X);
 cv.err = cv.ypred - cv.y;
+cv.abs_err = abs(cv.y) - abs(cv.ypred);
+% cv_data.cv_svr_Mdl = crossval(train.svr_Mdl, cv.X);
+% cv_data.L = kfoldLoss(cv_data.cv_svr_Mdl);
 
-cv_data.cv_svr_Mdl = crossval(train.svr_Mdl, cv.X);
-cv_data.L = kfoldLoss(cv_data.cv_svr_Mdl);
-
-fprintf('k folds loss %d', cv_data.L);
+% fprintf('k folds loss %d', cv_data.L);
 
 figure;
 plot(cv.ypred, 'o');
@@ -52,86 +53,39 @@ fprintf('training_svr_loss : %d \n',train.training_svr_loss);
 
 plotfixer;
 
-%% reduced features 
-
-excluded_features = [6,7,9];
-
-train.reduced679.inputs = reduced_features(train_data.inputs, excluded_features);
-cv.reduced679.X = reduced_features(cv_data.inputs,excluded_features)
-train.reduced679.svr_Mdl = fitrsvm(train.reduced679.inputs, train.y);% , 'KernelFunction','gaussian');
-
-train.reduced679.ypred = resubPredict(train.reduced679.svr_Mdl);
-train.reduced679.err = train.reduced679.ypred - train.y; 
-
-cv.reduced679.ypred = predict(train.reduced679.svr_Mdl, cv.reduced679.X);
-cv.reduced679.err = cv.reduced679.ypred - cv.y;
-
-figure;
-plot(cv.reduced679.ypred, 'o');
-hold on; 
-plot(cv.y, '*');
-legend('predicted' , 'actual')
-plot(cv.reduced679.err)
-title('removed features6-7-9: predict and actual normalized UTS')
-
-cv.reduced679.J_total = 1/(2*cv.m) * (cv.reduced679.err)' * cv.reduced679.err; 
-fprintf('cv_svr_total_loss : %d \n', cv.reduced679.J_total);
-
-train.reduced679.J_total = 1/(2*train.m) * (train.reduced679.err)' ...
-                                * train.reduced679.err; 
-fprintf('reduced_train_svr_total_loss : %d \n', train.reduced679.J_total);
-
-train.reduced679.training_svr_loss = resubLoss(train.reduced679.svr_Mdl);
-fprintf('reduced_training_svr_loss : %d \n',train.reduced679.training_svr_loss);
-
-plotfixer;
-
-%% reduced features 
-
-excluded_features = [4,6,7,9];
-
-train.reduced4679.inputs = reduced_features(train_data.inputs, excluded_features);
-cv.reduced4679.X = reduced_features(cv_data.inputs,excluded_features)
-train.reduced4679.svr_Mdl = fitrsvm(train.reduced4679.inputs, train.y);% , 'KernelFunction','gaussian');
-
-train.reduced4679.ypred = resubPredict(train.reduced4679.svr_Mdl);
-train.reduced4679.err = train.reduced4679.ypred - train.y; 
-
-cv.reduced4679.ypred = predict(train.reduced4679.svr_Mdl, cv.reduced4679.X);
-cv.reduced4679.err = cv.reduced4679.ypred - cv.y;
-
-figure;
-plot(cv.reduced4679.ypred, 'o');
-hold on; 
-plot(cv.y, '*');
-legend('predicted' , 'actual')
-title('removed features-4-6-7-9: predict and actual normalized UTS')
-
-cv.reduced4679.J_total = 1/(2*cv.m) * (cv.reduced4679.err)' * cv.reduced4679.err; 
-fprintf('cv_svr_total_loss : %d \n', cv.reduced4679.J_total);
-
-train.reduced4679.J_total = 1/(2*train.m) * (train.reduced4679.err)' ...
-                                    * train.reduced4679.err; 
-fprintf('reduced_train_svr_total_loss : %d \n', train.reduced4679.J_total);
-
-train.reduced4679.training_svr_loss = resubLoss(train.reduced4679.svr_Mdl);
-fprintf('reduced_training_svr_loss : %d \n',train.reduced4679.training_svr_loss);
+%% reduced features 6,7,9
+fprintf("reduced features 6,7,9 \n")
+[cv.reduced679.err, train.reduced679.err] = svr_exclude_feat(...
+                            [train.X, train.y], [cv.X, cv.y], [6,7,9]);
 
 
+%% reduced features 4,6,7,9
+fprintf("reduced features 4,6,7,9 \n")
+[cv.reduced4679.err, train.reduced4679.err] = svr_exclude_feat(...
+                            [train.X, train.y], [cv.X, cv.y], [4,6,7,9]);
 
 %% comparing removing features
 
 figure;
 hold on; 
-plot(cv.err)
+plot(cv.abs_err )
 plot(cv.reduced679.err)
 plot(cv.reduced4679.err)
+legend('all features', 'removed 6,7,9', 'removed 4,6,7,9');
+title('|y_{actual}| - |y_{pred}|')
+plotfixer;
+
+figure;
+hold on; 
+plot(train.abs_err)
+plot(train.reduced679.err)
+plot(train.reduced4679.err)
+title('|y_{actual}| - |y_{pred}|')
 legend('all features', 'removed 6,7,9', 'removed 4,6,7,9');
 plotfixer;
 
 %% fitsvr with k-folds 
-train.svr_Mdl = fitrsvm(train.X, train.y, ...
-                        'KFold',15)%,...
+train.svr_Mdl = fitrsvm(train.X, train.y,'KFold',15);%,...
                         %'KernelFunction','gaussian')
 mseLin = kfoldLoss(train.svr_Mdl)
 fprintf('k folds loss %d', mseLin);

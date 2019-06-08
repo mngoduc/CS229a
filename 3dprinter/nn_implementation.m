@@ -4,7 +4,7 @@ close all; clear all; clc;
 
 load('train_data.mat');
 train.X = train_data.inputs; 
-size(train.X)
+
 train.y = train_data.UTS;
 train.m = size(train.X, 1);
 
@@ -14,6 +14,7 @@ load('cv_data.mat');
 cv.X = cv_data.inputs;
 cv.y_pred = sim(train.net,cv.X); 
 cv.y_actual = cv_data.UTS; 
+
 
 
 % 

@@ -1,17 +1,15 @@
 close all; clear all; clc
 
 load('train_data.mat'); 
-theta_init = zeros(9, 1);
+theta_init = zeros(18, 1);
 num_iters = 700; 
 alpha = 7.5e-3; 
-lambda = 6;
+lambda = 1; 
 
-% [train.theta, train.J_history] = gradientDescentMulti(train_data.normalized_inputs, ...
-%                                           train_data.normalized_young,...
-%                                           theta_init, alpha, num_iters);
-lambda = 15; 
+train_data.inputs_2nd_order = train_data.inputs.^2; 
+train_data.combined_orders = [train_data.inputs, train_data.inputs_2nd_order];
 
-[train.theta, train.J_history] = regGradDescent(train_data.inputs, ...
+[train.theta, train.J_history] = regGradDescent(train_data.combined_orders,... %train_data.inputs, ...
                                      train_data.UTS,...
                                      theta_init, alpha, ...
                                      lambda, num_iters);
@@ -23,41 +21,35 @@ train.theta(:, end)
 
 load('cv_data.mat');
 
+cv_data.inputs_2nd_order = cv_data.inputs.^2; 
+cv_data.combined_orders = [cv_data.inputs, cv_data.inputs_2nd_order];
+
 cv.J = zeros(num_iters, 1);
 for i = 1:length(train.theta)
-    cv.J(i) = computeCostMulti(cv_data.inputs, ...
+    cv.J(i) = computeCostMulti(cv_data.combined_orders,... % cv_data.inputs, ...
                                cv_data.UTS, ...
                                train.theta(:,i));
 end 
 
 cv.actual_J = cv.J * cv_data.sig(11) + cv_data.mu(11); 
-cv.y_pred = cv_data.inputs * train.theta(:, end);
-%cv.pred_err = cv.y_pred - cv_data.UTS
-figure; 
-plot(cv.y_pred,'o');
-hold on; 
-plot(cv_data.UTS,'*'); 
-legend('predicted', 'actual')
-title('Predicted and actual crossval')
 
-figure;
 plot(train.J_history)
 hold on; 
 plot(cv.J)
-legend('training error', 'cross-validation')
-title('Using all available features')
+legend("training error", "cross-validation")
+title("Using all available features")
 xlabel('Iterations')
 ylabel('Cost')
 plotfixer;
-savefig('Cost_all_features.fig')
+savefig("Cost_all_features.fig")
 
 
 figure; 
 plot(train.actual_J)
 hold on; 
 plot(cv.actual_J)
-legend('training error', 'cross-validation')
-title('actual error')
+legend("training error", "cross-validation")
+title("actual error")
 xlabel('Iterations')
 ylabel('Cost')
 plotfixer;
@@ -88,6 +80,10 @@ legend('predicted', 'actual')
 
 train_reduced.inputs = [train_data.inputs(:,1:5),...
                             train_data.inputs(:,7:8)];
+train_reduced.inputs_squared =  train_reduced.inputs.^2; 
+
+train_reduced.inputs_combined 
+
 theta_init_new = zeros(1,7);
 
 [train_reduced.theta, train_reduced.J_history] = ...

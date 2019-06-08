@@ -10,15 +10,17 @@ temp_infill(temp_infill == 2) = 6;
 all_data(:,4) = temp_infill;
 
 temp_material = all_data(:,8); 
-% abs UTS
+% abs UTS, [MPa]
 temp_material(temp_material == 1) = 27;
-% pla UTS
+% pla UTS, [MPa]
 temp_material(temp_material == 2) = 37; 
 all_data(:,8) = temp_material;
 % random number generator to separate into train - cv - test 
 
 [normalized_data, mu, sigma] = featureNormalize(all_data);
 all_data = normalized_data;
+
+save('all_data.mat','all_data');
 
 idx = randperm(50,50);
 
@@ -33,6 +35,7 @@ test = zeros(10, 12);
 % 1  = grid, 2 = honeycomb
 % 1 = abs, 2 = pla
 %% Data has been normalized, now separate into train-validate-stress
+
 
 for i = 1:length(train_idx)
     idx = train_idx(i);

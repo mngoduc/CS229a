@@ -4,6 +4,11 @@ load('train_data.mat');
 theta_init = zeros(9, 1);
 num_iters = 700; 
 alpha = 7.5e-3; 
+lambda = 6;
+
+% [train.theta, train.J_history] = gradientDescentMulti(train_data.normalized_inputs, ...
+%                                           train_data.normalized_young,...
+%                                           theta_init, alpha, num_iters);
 lambda = 15; 
 
 [train.theta, train.J_history] = regGradDescent(train_data.inputs, ...
@@ -39,20 +44,20 @@ figure;
 plot(train.J_history)
 hold on; 
 plot(cv.J)
-legend("training error", "cross-validation")
-title("Using all available features")
+legend('training error', 'cross-validation')
+title('Using all available features')
 xlabel('Iterations')
 ylabel('Cost')
 plotfixer;
-savefig("Cost_all_features.fig")
+savefig('Cost_all_features.fig')
 
 
 figure; 
 plot(train.actual_J)
 hold on; 
 plot(cv.actual_J)
-legend("training error", "cross-validation")
-title("actual error")
+legend('training error', 'cross-validation')
+title('actual error')
 xlabel('Iterations')
 ylabel('Cost')
 plotfixer;

@@ -9,7 +9,7 @@ train.X = train_data.inputs;
 
 train.y = train_data.UTS;
 train.m = size(train.X, 1);
-layer_size = 11;
+layer_size = 7;
 train.autoenc = trainAutoencoder(train.X', layer_size);
 
 cv.X = cv_data.inputs; 
@@ -31,22 +31,24 @@ num_iters = 900;
 alpha =1e-3; 
 lambda = 15; 
 
-[train.theta, train.J_history] = regGradDescent(train.Encoded_X', ...
+[train.lin_reg.theta, train.J_history] = regGradDescent(train.Encoded_X', ...
                                      train_data.UTS,...
                                      theta_init, alpha, ...
                                      lambda, num_iters);
 
 cv.J = zeros(num_iters, 1);
-for i = 1:length(train.theta)
+for i = 1:length(train.lin_reg.theta)
     cv.J(i) = computeCostMulti(cv.Encoded_X', ...
                                cv_data.UTS, ...
-                               train.theta(:,i));
+                               train.lin_reg.theta(:,i));
 end 
-%%
+
+
+
 test.Encoded_X = train.Encoder_W * test_data.inputs' + train.Encoder_b;
 
 test_cost = computeCostMulti(test.Encoded_X', test_data.UTS, ...
-                                train.theta(:,end));
+                                train.lin_reg.theta(:,end));
 
 figure;
 plot(train.J_history)
@@ -58,3 +60,9 @@ xlabel('Iterations')
 ylabel('Cost')
 plotfixer;
 savefig("Cost_auto_encoder.fig")
+
+
+%%
+
+train.svr_Mdl = fitrsvm(train.Encoded_X', train.y);
+

@@ -4,12 +4,12 @@ load('train_data.mat');
 theta_init = zeros(9, 1);
 num_iters = 700; 
 alpha = 7.5e-3; 
-lambda = 6;
+lambda = 1;
 
 % [train.theta, train.J_history] = gradientDescentMulti(train_data.normalized_inputs, ...
 %                                           train_data.normalized_young,...
 %                                           theta_init, alpha, num_iters);
-lambda = 15; 
+lambda = 10; 
 
 [train.theta, train.J_history] = regGradDescent(train_data.inputs, ...
                                      train_data.UTS,...
@@ -38,7 +38,7 @@ plot(cv.y_pred,'o');
 hold on; 
 plot(cv_data.UTS,'*'); 
 legend('predicted', 'actual')
-title('Predicted and actual crossval')
+title('Predicted and Actual Output')
 
 figure;
 plot(train.J_history)

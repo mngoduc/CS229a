@@ -4,11 +4,12 @@ close all; clear all; clc;
 
 load('train_data.mat');
 load('cv_data.mat');
+load('test_data.mat');
 train.X = train_data.inputs; 
 
 train.y = train_data.UTS;
 train.m = size(train.X, 1);
-layer_size = 7;
+layer_size = 11;
 train.autoenc = trainAutoencoder(train.X', layer_size);
 
 cv.X = cv_data.inputs; 
@@ -26,8 +27,8 @@ cv.Encoded_X = train.Encoder_W * cv.X' + train.Encoder_b;
 %%
 
 theta_init = zeros(layer_size, 1);
-num_iters = 500; 
-alpha = 7.5e-3; 
+num_iters = 900; 
+alpha =1e-3; 
 lambda = 15; 
 
 [train.theta, train.J_history] = regGradDescent(train.Encoded_X', ...
@@ -41,6 +42,11 @@ for i = 1:length(train.theta)
                                cv_data.UTS, ...
                                train.theta(:,i));
 end 
+%%
+test.Encoded_X = train.Encoder_W * test_data.inputs' + train.Encoder_b;
+
+test_cost = computeCostMulti(test.Encoded_X', test_data.UTS, ...
+                                train.theta(:,end));
 
 figure;
 plot(train.J_history)

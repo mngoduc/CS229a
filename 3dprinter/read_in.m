@@ -98,5 +98,9 @@ cv_data.mu = mu;
 cv_data.sig = sigma;
 save('cv_data.mat', 'cv_data')
 
+
+test_data.inputs = test(:,1:9);
+test_data.UTS = test(:,11); 
 test_data.mu = mu; 
 test_data.sig = sigma; 
+save('test_data.mat', 'test_data')

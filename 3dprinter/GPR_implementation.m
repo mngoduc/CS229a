@@ -2,7 +2,7 @@ close all ; clear all; clc;
 
 load('train_data.mat'); 
 load('cv_data.mat'); 
-GPR_kernel = 'ardsquaredexponential'; %'squaredexponential';
+GPR_kernel = 'squaredexponential'; %'ardsquaredexponential';
 
 % 'squaredexponential': cross validation loss: 3.981976e-01 ;loss from introducing new data: 3.487219e-01 
 gprMdl = fitrgp([train_data.inputs; cv_data.inputs],...
